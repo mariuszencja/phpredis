@@ -87,7 +87,7 @@ class Redis_Cluster_Test extends Redis_Test {
 
     /* Override newInstance as we want a RedisCluster object */
     protected function newInstance() {
-        return new RedisCluster(NULL, self::$_arr_node_map);
+        return new RedisCluster(NULL, self::$_arr_node_map, 1, 1, true, self::AUTH);
     }
 
     /* Overrides for RedisTest where the function signature is different.  This
@@ -641,7 +641,7 @@ class Redis_Cluster_Test extends Redis_Test {
         @ini_set('session.save_handler', 'rediscluster');
         @ini_set('session.save_path', implode('&', array_map(function ($seed) {
             return 'seed[]=' . $seed;
-        }, self::$_arr_node_map)) . '&failover=error');
+        }, self::$_arr_node_map)) . '&failover=error' . (self::AUTH ? '&auth=' . self::AUTH : ''));
         if (!@session_start()) {
             return $this->markTestSkipped();
         }
@@ -656,7 +656,7 @@ class Redis_Cluster_Test extends Redis_Test {
 
         $pong = 0;
         for ($i = 0; $i < 10; $i++) {
-            $obj_rc = new RedisCluster(NULL, self::$_arr_node_map);
+            $obj_rc = new RedisCluster(NULL, self::$_arr_node_map, 1, 1, true, self::AUTH);
             $pong += $obj_rc->ping("key:$i");
         }
 
@@ -672,7 +672,7 @@ class Redis_Cluster_Test extends Redis_Test {
 
         $pong = 0;
         for ($i = 0; $i < 10; $i++) {
-            $obj_rc = new RedisCluster(NULL, self::$_arr_node_map, 30, 30, true);
+            $obj_rc = new RedisCluster(NULL, self::$_arr_node_map, 30, 30, true, self::AUTH);
             $pong += $obj_rc->ping("key:$i");
         }
 
